@@ -132,7 +132,7 @@
 <body>
   <header>
     <div class="logo-container">
-      <img src="./grabit_logo.png" alt="G-Checkout Logo" class="logo">
+      <img src="./static/grabit_logo.png" alt="G-Checkout Logo" class="logo">
     </div>
   </header>
   <div class="container">
@@ -165,19 +165,17 @@
   <script>
     const nameMap = {
       "F8412900710958": "Infusion de tila",
-      "F5449000131805": "Coca-Cola Zero Lata",
       "F3046920028363": "Lindt Excellence Edelbitter 85%",
       "F5053990125029": "Pringles Original",
       "F7613032541040": "MAGGI Jugoso al Horno Ajillo",
       "F8410573103671": "Popitas"
     };
     const localImages = {
-      "F8412900710958": "./static/Infusion de tila",
-      "F3046920028363": "./static/Lindt Excellence Edelbitter 85%",
-      "F5053990125029": "./static/Pringles Original",
+      "F8412900710958": "./static/te.png",
+      "F3046920028363": "./static/lindt.png",
+      "F5053990125029": "./static/pringles.png",
       "F7613032541040": "./static/jugoso_horno.png",
-      "F5449000131805": "./static/cocacola.png",
-      "F8410573103671": "./static/Popitas"
+      "F8410573103671": "./static/popitas.png"
     };
     const scanCounts = {};
     const ws = new WebSocket("ws://app.grabit.ai/ws/get_reference_ean");
