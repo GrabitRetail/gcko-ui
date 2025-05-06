@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>G-Checkout</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-start: #E74C3C;
+      --primary-end: #8E24AA;
+      --primary-gradient: linear-gradient(90deg, var(--primary-start) 0%, var(--primary-end) 100%);
+      --error-color: #C62828;
+      --bg-light: #FFFFFF;
+      --card-bg: #F9FAFB;
+      --text-dark: #1F2937;
+      --font-base: 'Montserrat', sans-serif;
+      --transition: 0.3s ease;
+      --border-radius: 8px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      font-family: var(--font-base);
+      background: var(--card-bg);
+      color: var(--text-dark);
+    }
+    header {
+      background: var(--primary-gradient);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    header .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    header img.logo {
+      height: 40px;
+    }
+    header span.title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    .left, .right {
+      background: var(--bg-light);
+      overflow-y: auto;
+      padding: 2rem;
+    }
+    .left {
+      width: 65%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid #E5E7EB;
+    }
+    .right {
+      width: 35%;
+    }
+    .product-info {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+    .product-info strong {
+      color: var(--text-dark);
+    }
+    .error {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .triangle {
+      margin: 0 auto;
+      width: 0; height: 0;
+      border-left: 40px solid transparent;
+      border-right: 40px solid transparent;
+      border-bottom: 70px solid var(--error-color);
+    }
+    .triangle-text {
+      position: absolute;
+      top: -50px;
+      left: -40px;
+      width: 80px;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: white;
+    }
+    .error-text {
+      color: var(--error-color);
+      font-weight: 700;
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+    .photos {
+      display: flex;
+      gap: 1rem;
+    }
+    .foto {
+      flex: 1;
+      background: var(--bg-light);
+      border-radius: var(--border-radius);
+      height: 220px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: transform var(--transition);
+    }
+    .foto:hover { transform: translateY(-4px); }
+    .foto img {
+      max-height: 100%;
+      max-width: 100%;
+    }
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .product-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: var(--bg-light);
+      border-radius: var(--border-radius);
+      border: 1px solid #E5E7EB;
+      transition: background-color var(--transition), transform var(--transition);
+    }
+    .product-row:hover { transform: translateX(4px); }
+    .product-row span.name {
+      font-weight: 600;
+    }
+    .product-row span.qty {
+      font-size: 0.95rem;
+      color: #6B7280;
+    }
+    .product-row.switch-error,
+    .product-row.object-error {
+      background-color: rgba(231,76,60,0.1);
+      border-color: var(--error-color);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <img src="./grabit_logo.png" alt="G-Checkout Logo" class="logo">
+      <span class="title">G-Checkout</span>
+    </div>
+  </header>
+  <div class="container">
+    <div class="left">
+      <div>
+        <div class="product-info" id="product-info">
+          <strong>Product:</strong> <span id="info-name">...</span><br>
+          <strong>EAN:</strong> <span id="info-ean">...</span>
+        </div>
+        <div id="error" class="error" style="display:none;">
+          <div class="triangle"><div class="triangle-text">!</div></div>
+          <div class="error-text" id="error-text"></div>
+        </div>
+      </div>
+      <div class="photos">
+        <div class="foto" id="foto1"><span>Loading...</span></div>
+        <div class="foto" id="foto2"><span>Loading...</span></div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="product-list" id="product-list"></div>
+    </div>
+  </div>
+  <script>
+    const nameMap = {
+      "F8411273011440": "Plátano",
+      "F5449000131805": "Coca-Cola Zero Lata",
+      "F3046920028363": "Lindt Excellence 85%",
+    };
+    const scanCounts = {};
+    const ws = new WebSocket("ws://app.grabit.ai/ws/get_reference_ean");
+    ws.onmessage = ({ data }) => {
+      const json = JSON.parse(data);
+      const status = json.detection_status || {};
+      const images = status.images || {};
+      const objectErr = !images.object_1;
+      const switchErr = status.trigger === true || status.detected_ean !== status.reference_ean;
+      const refEan = status.reference_ean || "";
+      const productName = nameMap[refEan] || "Desconocido";
+      document.getElementById("info-name").textContent = productName;
+      document.getElementById("info-ean").textContent = refEan;
+      const errorDiv = document.getElementById("error");
+      const errorText = document.getElementById("error-text");
+      if (objectErr) {
+        errorDiv.style.display = "block";
+        errorText.textContent = "OBJECT NOT DETECTED";
+      } else if (switchErr) {
+        errorDiv.style.display = "block";
+        errorText.textContent = "TICKET SWITCH ERROR";
+      } else {
+        errorDiv.style.display = "none";
+      }
+      document.getElementById("foto1").innerHTML = images.source_image
+        ? `<img src="${images.source_image}" alt="Product Image">`
+        : `<span style="color:var(--error-color); font-weight:bold;">ERROR</span>`;
+      document.getElementById("foto2").innerHTML = images.object_1
+        ? `<img src="${images.object_1}" alt="Object Image">`
+        : `<span style="color:var(--error-color); font-weight:bold;">OBJECT NOT DETECTED</span>`;
+      scanCounts[productName] = (scanCounts[productName] || 0) + 1;
+      const list = document.getElementById("product-list"); list.innerHTML = "";
+      for (const [name, qty] of Object.entries(scanCounts)) {
+        const row = document.createElement("div"); row.className = "product-row";
+        if (name === productName && (objectErr || switchErr)) {
+          row.classList.add(objectErr ? "object-error" : "switch-error");
+        }
+        row.innerHTML = `<span class=\"name\">${name}</span><span class=\"qty\">x${qty}</span>`;
+        list.appendChild(row);
+      }
+    };
+    ws.onerror = err => console.error(err);
+  </script>
+</body>
+</html>
+
