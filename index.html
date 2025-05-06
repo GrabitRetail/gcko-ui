@@ -41,7 +41,6 @@
       gap: 1rem;
     }
     header img.logo { height: 40px; }
-    header span.title { font-size: 1.5rem; font-weight: 700; letter-spacing: 1px; }
     .container { flex: 1; display: flex; overflow: hidden; }
     .left, .right { background: var(--bg-light); overflow-y: auto; padding: 2rem; }
     .left {
@@ -93,6 +92,7 @@
       background-color: rgba(231,76,60,0.1);
       border-color: var(--error-color);
     }
+
     /* Modal */
     #switch-modal {
       display: none;
@@ -112,6 +112,10 @@
       max-width: 400px;
       text-align: center;
       font-size: 1.1rem;
+    }
+    #switch-modal .modal-content ul {
+      text-align: left;
+      padding-left: 1.2rem;
     }
     #switch-modal .modal-content button {
       margin-top: 1rem;
@@ -140,8 +144,8 @@
           <img id="scanned-img" alt="Scanned Object" />
         </div>
         <div class="box" id="prediction-box">
-          <h3>Prediction</h3>
-          <p><strong>Predicted:</strong> <span id="pred-name">...</span></p>
+          <h3>Detected</h3>
+          <p><strong>Product:</strong> <span id="pred-name">...</span></p>
           <img id="pred-img" alt="Predicted Object" />
         </div>
       </div>
@@ -153,10 +157,8 @@
 
   <!-- Modal -->
   <div id="switch-modal">
-    <div class="modal-content">
-      <p><strong>Switching error detected:</strong></p>
-      <p>The detected product does not match the expected one.</p>
-      <button onclick="document.getElementById('switch-modal').style.display = 'none'">Close</button>
+    <div class="modal-content" id="modal-content">
+      <!-- dynamic content injected via JS -->
     </div>
   </div>
 
@@ -173,7 +175,7 @@
       "F8412900710958": "Infusion de tila",
       "F3046920028363": "Lindt Excellence Edelbitter 85%",
       "F5053990125029": "Pringles Original",
-      "F7613032541040": "MAGGI Jugoso al Horno Ajillo",
+      "F7613032541040": "./jugoso_horno.png",
       "F5449000131805": "./cocacola.png",
       "F8410573103671": "Popitas"
     };
@@ -187,8 +189,20 @@
       const objectErr = !images.object_1;
       const switchErr = status.trigger === true || status.detected_ean !== status.reference_ean;
 
-      if (switchErr && !objectErr) {
-        document.getElementById("switch-modal").style.display = "flex";
+      // Error modal logic
+      const modal = document.getElementById("switch-modal");
+      const modalContent = document.getElementById("modal-content");
+      if (objectErr || switchErr) {
+        let html = `<h3>⚠️ Error Detected</h3><ul>`;
+        if (objectErr) {
+          html += `Please scan again`;
+        }
+        if (switchErr && !objectErr) {
+          html += `EAN code mismatch`;
+        }
+        html += `</ul><button onclick="document.getElementById('switch-modal').style.display = 'none'">Close</button>`;
+        modalContent.innerHTML = html;
+        modal.style.display = "flex";
       }
 
       // Scanned
